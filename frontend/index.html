@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AQUAAIRE | OCR AQI Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Landing Page Section -->
+        <section id="landing" class="active">
+            <div class="landing-wrapper">
+                <nav class="landing-nav">
+                    <div class="logo">
+                        <i data-lucide="wind" class="icon-logo"></i>
+                        <span>AQUAAIRE</span>
+                    </div>
+                </nav>
+
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <div class="badge">Next-Gen OCR Technology</div>
+                        <h1 class="accent-text">Intelligent Air Monitoring</h1>
+                        <p class="hero-desc">Experience the future of environmental tracking. AQUAAIRE uses advanced
+                            vision algorithms to monitor any AQI display in real-time, delivering precise insights to
+                            your personal dashboard.</p>
+                        <div class="cta-group">
+                            <button id="start-btn" class="primary-btn">
+                                <span>Get Started</span>
+                                <i data-lucide="zap"></i>
+                            </button>
+                            <a href="#features" class="ghost-btn">Learn More</a>
+                        </div>
+                    </div>
+                    <div class="hero-visual">
+                        <div class="hero-img-container">
+                            <img src="hero.png" alt="Hero Display" class="hero-img">
+                            <div class="glow-effect"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="features" class="features-section">
+                    <div class="feature-card">
+                        <i data-lucide="camera-control"></i>
+                        <h4>Auto-Scanning</h4>
+                        <p>Continuous monitoring with intelligent frame analysis every 5 seconds.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i data-lucide="binary"></i>
+                        <h4>High Precision</h4>
+                        <p>Advanced OCR pipeline optimized for digital instrument displays.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i data-lucide="bar-chart-3"></i>
+                        <h4>Cloud Sync</h4>
+                        <p>Real-time analytics and historical trend mapping for long-term health monitoring.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Monitoring Interface Section -->
+        <section id="monitor" class="hidden">
+            <nav class="top-nav">
+                <div class="logo-sm">
+                    <i data-lucide="wind"></i>
+                    <span>AQUAAIRE</span>
+                </div>
+                <div id="connection-status" class="status-indicator">
+                    <span class="dot"></span>
+                    <span class="text">System Live</span>
+                </div>
+            </nav>
+
+            <div class="dashboard-grid">
+                <!-- Camera Feed Column -->
+                <div class="camera-card glass-card">
+                    <div class="card-header">
+                        <h3><i data-lucide="camera"></i> Live Source</h3>
+                        <div class="auto-toggle">
+                            <span>Auto Capture</span>
+                            <label class="switch">
+                                <input type="checkbox" id="auto-capture-sync">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="video-container">
+                        <video id="video" autoplay playsinline muted></video>
+                        <canvas id="canvas" class="hidden"></canvas>
+                        <div id="capture-overlay" class="capture-animation hidden"></div>
+                    </div>
+                    <div class="camera-controls">
+                        <button id="capture-btn" class="action-btn">
+                            <i data-lucide="camera"></i>
+                            Capture Frame
+                        </button>
+                        <label for="upload-img" class="secondary-btn">
+                            <i data-lucide="upload"></i>
+                            Upload Image
+                            <input type="file" id="upload-img" accept="image/*" class="hidden">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- NEW: OCR Preview Column -->
+                <div class="preview-card glass-card">
+                    <div class="card-header">
+                        <h3><i data-lucide="scan-eye"></i> OCR Processing Preview</h3>
+                    </div>
+                    <div class="preview-container">
+                        <img id="processed-img-preview" src="" alt="OCR Preview" class="placeholder-img">
+                        <div id="no-preview" class="preview-overlay">
+                            <i data-lucide="image"></i>
+                            <p>Capture a frame to see OCR results</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics Dashboard -->
+                <div class="metrics-grid">
+                    <div class="metric-card glass-card aqi-card">
+                        <span class="label">AQI INDEX</span>
+                        <div class="value" id="val-aqi">--</div>
+                        <div class="status-pill" id="status-aqi">Waiting...</div>
+                        <i data-lucide="activity" class="bg-icon"></i>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <span class="label">PM2.5</span>
+                        <div class="value" id="val-pm25">--</div>
+                        <span class="unit">µg/m³</span>
+                        <i data-lucide="wind" class="bg-icon"></i>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <span class="label">PM10</span>
+                        <div class="value" id="val-pm10">--</div>
+                        <span class="unit">µg/m³</span>
+                        <i data-lucide="droplets" class="bg-icon"></i>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <span class="label">CO2</span>
+                        <div class="value" id="val-co2">--</div>
+                        <span class="unit">PPM</span>
+                        <i data-lucide="layers" class="bg-icon"></i>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <span class="label">Temperature</span>
+                        <div class="value" id="val-temp">--</div>
+                        <span class="unit">°C</span>
+                        <i data-lucide="thermometer" class="bg-icon"></i>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <span class="label">Humidity</span>
+                        <div class="value" id="val-humidity">--</div>
+                        <span class="unit">%</span>
+                        <i data-lucide="cloud-rain" class="bg-icon"></i>
+                    </div>
+                </div>
+
+                <!-- History & Trends -->
+                <div class="history-card glass-card">
+                    <div class="card-header">
+                        <h3><i data-lucide="trending-up"></i> AQI Trend</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="aqi-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="logs-card glass-card">
+                    <div class="card-header">
+                        <h3><i data-lucide="list"></i> Recent Readings</h3>
+                        <span class="timestamp" id="last-update">Last sync: Never</span>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>AQI</th>
+                                    <th>PM2.5</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Rows dynamic -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
